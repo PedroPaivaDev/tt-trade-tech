@@ -1,95 +1,55 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+'use client'
+import React from 'react';
+import styles from './page.module.css';
+import useLocalStorage from '../hooks/useLocalStorage'
 
 export default function Home() {
+  const [keyAPI, setKeyAPI] = React.useState<string>('');
+  const apiBaseUrl = 'https://api-football-v1.p.rapidapi.com/v3/timezone';
+  const [keyStorage, setKeyStorage] = useLocalStorage<string|null>('keyAPI', null);
+
+  const requestOptions:RequestInit = {
+    method: 'GET',
+    headers: {
+      'X-RapidAPI-Key': keyStorage as string,
+      'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com'
+    }
+  };
+
+  async function getStatus(url:string) {
+    const data = await fetch(url, requestOptions);
+    const json = await data.json();
+    return json;
+  }
+
+  function handleLogin() {
+    setKeyStorage(keyAPI)
+  }
+
+  React.useEffect(() => {
+    keyStorage && getStatus(apiBaseUrl)
+    .then(resolve => console.log(resolve.response))
+    .catch(err => console.log(err))
+    // eslint-disable-next-line
+  },[])
+
   return (
     <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
+      <div className={styles.userLogin}>
+        <label htmlFor="keyAPI">
+          Insira aqui a sua Chave de acesso:
+          <input
+            id='keyAPI'
+            name='keyAPI'
+            type="text"
+            value={keyAPI}
+            onChange={({target}) => setKeyAPI(target.value)}
+          />
+        </label>
+        <button onClick={handleLogin}>Entrar</button>
       </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+      <h1>MEU TIME</h1>
+      <a href="https://dashboard.api-football.com/register">Quero me registrar no banco de dados</a>
     </main>
   )
 }
