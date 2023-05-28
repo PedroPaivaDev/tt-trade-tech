@@ -10,3 +10,15 @@
 .main a:hover {
   color: tomato;
 }
+
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 340px;
+}
+
+.form div {
+  width: 100%;
+}
